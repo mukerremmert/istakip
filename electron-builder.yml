@@ -1,0 +1,68 @@
+appId: com.ramazancatal.is-takip-sistemi
+productName: İş Takip Sistemi
+copyright: Copyright © 2025 Ramazan Catal
+
+# Auto-Update: GitHub Releases
+publish:
+  provider: github
+  owner: mukerremmert
+  repo: istakip
+  releaseType: release
+
+# Directories
+directories:
+  output: dist-installer
+  buildResources: assets
+
+# Files to include
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - package.json
+  - node_modules/**/*
+  - "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}"
+  - "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}"
+  - "!node_modules/*.d.ts"
+  - "!node_modules/.bin"
+  - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
+  - "!.editorconfig"
+  - "!**/._*"
+  - "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}"
+  - "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}"
+  - "!**/{appveyor.yml,.travis.yml,circle.yml}"
+  - "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+
+# ASAR Configuration
+asar: true
+asarUnpack:
+  - "**/node_modules/sqlite3/**/*"
+  - "**/node_modules/better-sqlite3/**/*"
+
+# Windows Configuration
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  requestedExecutionLevel: asInvoker
+  signAndEditExecutable: false
+
+# NSIS Installer
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: İş Takip Sistemi
+  menuCategory: true
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  
+# Portable Configuration (Alternatif)
+portable:
+  artifactName: ${productName}-${version}-portable.exe
+
+# Compression
+compression: maximum

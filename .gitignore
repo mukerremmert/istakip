@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-electron/
+dist-installer/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.log
+.DS_Store
+Thumbs.db
+*.exe
+*.blockmap
+*.yml
+!electron-builder.yml
