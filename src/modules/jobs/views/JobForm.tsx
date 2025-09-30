@@ -52,6 +52,9 @@ const JobForm: React.FC<JobFormProps> = ({
   const [showVehicleDropdown, setShowVehicleDropdown] = useState(false)
   const [courtSearchTerm, setCourtSearchTerm] = useState('')
   const [vehicleSearchTerm, setVehicleSearchTerm] = useState('')
+  
+  // Detaylı bilgiler collapsible state (düzenleme modunda açık, yeni eklemede kapalı)
+  const [showDetailedInfo, setShowDetailedInfo] = useState(!!job)
 
   // Form verilerini sıfırla
   const resetForm = () => {
@@ -291,8 +294,18 @@ const JobForm: React.FC<JobFormProps> = ({
             </div>
           )}
           
-          <form onSubmit={handleSubmit} className="space-y-4" style={{overflow: 'visible'}}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{overflow: 'visible'}}>
+          <form onSubmit={handleSubmit} className="space-y-6" style={{overflow: 'visible'}}>
+            {/* ========== TEMEL BİLGİLER (HER ZAMAN GÖRÜNÜR) ========== */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
+                <div className="w-2 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
+                <h4 className="text-base font-semibold text-gray-900">
+                  Temel Bilgiler
+                </h4>
+                <span className="text-xs text-gray-500 ml-auto">* Zorunlu alanlar</span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{overflow: 'visible'}}>
               {/* Tarih */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -438,7 +451,37 @@ const JobForm: React.FC<JobFormProps> = ({
                   Mahkeme adını yazarak arayın veya listeden seçin
                 </div>
               </div>
+              </div>
+            </div>
 
+            {/* ========== DETAYLI BİLGİLER (COLLAPSİBLE) ========== */}
+            <div className="space-y-4">
+              <button
+                type="button"
+                onClick={() => setShowDetailedInfo(!showDetailedInfo)}
+                className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-6 bg-gradient-to-b from-purple-500 to-purple-600 rounded-full"></div>
+                  <h4 className="text-base font-semibold text-gray-900">
+                    Detaylı Bilgiler
+                  </h4>
+                  <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full border border-gray-200">
+                    İsteğe Bağlı
+                  </span>
+                </div>
+                <svg
+                  className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${showDetailedInfo ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showDetailedInfo && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50" style={{overflow: 'visible'}}>
               {/* Dosya Numarası */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -751,56 +794,58 @@ const JobForm: React.FC<JobFormProps> = ({
                   />
                 </div>
               )}
-            </div>
-
-            {/* KDV Hesaplama Gösterimi */}
-            {formData.totalAmount > 0 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-blue-900 mb-2">Tutar Detayları</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-blue-700">KDV Hariç Tutar:</span>
-                    <div className="font-medium text-blue-900">
-                      {formData.baseAmount.toLocaleString('tr-TR', { 
-                        style: 'currency', 
-                        currency: 'TRY' 
-                      })}
+              
+              {/* Notlar */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notlar
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Ek bilgiler..."
+                  rows={3}
+                />
+              </div>
+              
+              {/* KDV Hesaplama Gösterimi */}
+              {formData.totalAmount > 0 && (
+                <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-blue-900 mb-2">Tutar Detayları</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <span className="text-blue-700">KDV Hariç Tutar:</span>
+                      <div className="font-medium text-blue-900">
+                        {formData.baseAmount.toLocaleString('tr-TR', { 
+                          style: 'currency', 
+                          currency: 'TRY' 
+                        })}
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <span className="text-blue-700">KDV Tutarı (%{formData.vatRate}):</span>
-                    <div className="font-medium text-blue-900">
-                      {formData.vatAmount.toLocaleString('tr-TR', { 
-                        style: 'currency', 
-                        currency: 'TRY' 
-                      })}
+                    <div>
+                      <span className="text-blue-700">KDV Tutarı (%{formData.vatRate}):</span>
+                      <div className="font-medium text-blue-900">
+                        {formData.vatAmount.toLocaleString('tr-TR', { 
+                          style: 'currency', 
+                          currency: 'TRY' 
+                        })}
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <span className="text-blue-700">KDV Dahil Toplam:</span>
-                    <div className="font-medium text-blue-900">
-                      {formData.totalAmount.toLocaleString('tr-TR', { 
-                        style: 'currency', 
-                        currency: 'TRY' 
-                      })}
+                    <div>
+                      <span className="text-blue-700">KDV Dahil Toplam:</span>
+                      <div className="font-medium text-blue-900">
+                        {formData.totalAmount.toLocaleString('tr-TR', { 
+                          style: 'currency', 
+                          currency: 'TRY' 
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Notlar */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Notlar
-              </label>
-              <textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ek bilgiler..."
-                rows={3}
-              />
+              )}
+            </div>
+              )}
             </div>
             
             <div className="flex justify-end space-x-3 pt-4">

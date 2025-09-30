@@ -1,5 +1,37 @@
 # İş Takip Sistemi - Versiyon Geçmişi
 
+## v2.2.3 - UX İyileştirmesi: Basitleştirilmiş İş Ekleme Formu (2025-09-30)
+
+### 🎯 Form İyileştirmesi
+- **Collapsible Detaylı Bilgiler**: Form artık iki section'a ayrıldı
+- **Temel Bilgiler** (Her zaman görünür):
+  - İş Geliş Tarihi ⭐ Zorunlu
+  - İş Yapılacak Tarihi ⭐ Zorunlu
+  - Mahkeme ⭐ Zorunlu
+- **Detaylı Bilgiler** (İsteğe bağlı, kapalı):
+  - Dosya Numarası
+  - Araç
+  - Tutar
+  - Ödeme/Fatura Durumu
+  - İş Durumu
+  - Tamamlanma bilgileri
+  - Notlar
+
+### ✨ Kullanıcı Deneyimi
+- Müşteri ilk aradığında sadece temel bilgileri girmek yeterli
+- İş bittikten sonra "Detaylı Bilgiler" açılıp tamamlanır
+- Modern, animasyonlu collapse/expand buton
+- Düzenleme modunda detaylı bilgiler otomatik açık
+- Gradient başlıklar ve modern tasarım
+
+### 🎨 Görsel İyileştirmeler
+- Gradient section header'ları (mavi ve mor)
+- "İsteğe Bağlı" badge
+- Collapse animasyonu (180° dönen ok ikonu)
+- Daha temiz, organize görünüm
+
+---
+
 ## v2.2.2 - Modern Auto-Update UI (2025-09-30)
 
 ### ✨ Yenilikler

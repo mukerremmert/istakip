@@ -1,6 +1,6 @@
 {
   "name": "is-takip-sistemi",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Modern İş Takip Sistemi - Electron + React + TypeScript",
   "main": "dist-electron/main.cjs",
   "scripts": {
