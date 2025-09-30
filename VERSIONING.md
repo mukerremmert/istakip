@@ -1,5 +1,24 @@
 # İş Takip Sistemi - Versiyon Geçmişi
 
+## v2.2.1 - Auto-Update Test Release (2025-09-30)
+
+### 🔄 Auto-Update Sistemi Test
+- **GitHub Release**: Repo public yapıldı, auto-update çalışıyor
+- **Test Badge**: Dashboard'a "Auto-Update Test" badge eklendi
+- **Güncelleme Mekanizması**: v2.2.0 → v2.2.1 otomatik güncelleme testi
+- **electron-updater**: 2 saatte bir otomatik kontrol yapıyor
+
+### ✨ Kullanıcı Bildirimi
+- Uygulama arka planda güncelleme kontrolü yapıyor
+- Yeni versiyon bulunduğunda kullanıcıya bildirim gösteriliyor
+- İndirme ve kurulum kullanıcı onayı ile yapılıyor
+
+### 📦 Test Amacı
+Bu versiyon auto-update mekanizmasını test etmek için çıkarılmıştır.
+Sadece görsel bir değişiklik içerir (Dashboard badge).
+
+---
+
 ## v2.2.0 - Production Build ve Windows Installer Düzeltmeleri (2025-09-29)
 
 ### 🚀 Electron Build Sorunları Çözüldü

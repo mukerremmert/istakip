@@ -249,3 +249,4 @@ Sorun yaşarsanız:
 **Build Versiyonu**: 1.0.0
 **Electron**: 38.1.2
 **Node**: 22.14.0
+

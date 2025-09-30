@@ -301,3 +301,4 @@ deleteAppDataOnUninstall: false  # ← Bu satır kritik!
 **Test Tarihi**: Test edilecek  
 **Beklenen Sonuç**: Database korunacak ✓  
 **Gerçek Sonuç**: Test sonrası güncellenecek
+

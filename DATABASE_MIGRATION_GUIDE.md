@@ -295,3 +295,4 @@ npx prisma migrate dev --name add_received_date
 ---
 **Son Güncelleme**: 29 Eylül 2025
 **Durum**: Schema versiyonlama sistemi eklenecek (v1.1.0)
+

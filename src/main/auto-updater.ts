@@ -101,3 +101,4 @@ export function checkForUpdates() {
     log.error('Güncelleme kontrolü başarısız:', err)
   })
 }
+

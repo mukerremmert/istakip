@@ -69,3 +69,4 @@ Avantajlar:
 - ✅ SmartScreen sorunu yok
 - ✅ 5x daha hızlı
 - ✅ Ücretsiz code signing
+
