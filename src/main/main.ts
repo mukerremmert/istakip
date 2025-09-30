@@ -291,8 +291,34 @@ function setupIPCHandlers() {
       return { success: false, error: error instanceof Error ? error.message : 'Bilinmeyen hata' }
     }
   })
+  
+  // Auto-updater: Güncelleme indirme
+  ipcMain.handle('start-download-update', async () => {
+    console.log('📥 Güncelleme indirme başlatıldı')
+    try {
+      const { autoUpdater } = require('electron-updater')
+      autoUpdater.downloadUpdate()
+      return { success: true }
+    } catch (error) {
+      console.error('❌ İndirme başlatma hatası:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Bilinmeyen hata' }
+    }
+  })
+  
+  // Auto-updater: Yükle ve yeniden başlat
+  ipcMain.handle('quit-and-install', async () => {
+    console.log('🔄 Uygulama yeniden başlatılıyor...')
+    try {
+      const { autoUpdater } = require('electron-updater')
+      autoUpdater.quitAndInstall(false, true)
+      return { success: true }
+    } catch (error) {
+      console.error('❌ Yeniden başlatma hatası:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Bilinmeyen hata' }
+    }
+  })
 
-  console.log('✅ Tüm IPC handlers kuruldu')
+  console.log('✅ Tüm IPC handlers kuruldu (auto-update dahil)')
 }
 
 function createWindow() {

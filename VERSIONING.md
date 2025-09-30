@@ -1,5 +1,18 @@
 # İş Takip Sistemi - Versiyon Geçmişi
 
+## v2.2.4 - Hotfix: Auto-Update IPC Handlers (2025-09-30)
+
+### 🐛 Bug Fix
+- **Critical Fix**: IPC handler'ları eksikti
+- `start-download-update` handler eklendi
+- `quit-and-install` handler eklendi
+- Auto-update artık tam çalışıyor
+
+### 🔧 Teknik Detay
+main.ts'ye eksik IPC handler'lar kaydedildi.
+
+---
+
 ## v2.2.3 - UX İyileştirmesi: Basitleştirilmiş İş Ekleme Formu (2025-09-30)
 
 ### 🎯 Form İyileştirmesi
