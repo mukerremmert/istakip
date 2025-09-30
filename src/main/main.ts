@@ -4,7 +4,7 @@ import path from 'path'
 import sqlite3 from 'sqlite3'
 import { promisify } from 'util'
 import fs from 'fs'
-import { setupAutoUpdater, checkForUpdates } from './auto-updater'
+import { setupAutoUpdater, checkForUpdates, downloadUpdate, quitAndInstall } from './auto-updater'
 
 console.log('🔥 MAIN.TS BAŞLADI - IPC HANDLER KURULUMU BAŞLIYOR')
 console.log('📦 Tüm import\'lar tamamlandı')
@@ -296,8 +296,7 @@ function setupIPCHandlers() {
   ipcMain.handle('start-download-update', async () => {
     console.log('📥 Güncelleme indirme başlatıldı')
     try {
-      const { autoUpdater } = require('electron-updater')
-      autoUpdater.downloadUpdate()
+      downloadUpdate() // Aynı autoUpdater instance'ını kullan
       return { success: true }
     } catch (error) {
       console.error('❌ İndirme başlatma hatası:', error)
@@ -309,8 +308,7 @@ function setupIPCHandlers() {
   ipcMain.handle('quit-and-install', async () => {
     console.log('🔄 Uygulama yeniden başlatılıyor...')
     try {
-      const { autoUpdater } = require('electron-updater')
-      autoUpdater.quitAndInstall(false, true)
+      quitAndInstall() // Aynı autoUpdater instance'ını kullan
       return { success: true }
     } catch (error) {
       console.error('❌ Yeniden başlatma hatası:', error)

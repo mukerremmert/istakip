@@ -1,5 +1,20 @@
 # İş Takip Sistemi - Versiyon Geçmişi
 
+## v2.2.6 - Hotfix: Progress Bar Çalışıyor! (2025-09-30)
+
+### 🐛 Critical Fix
+- **AutoUpdater Instance Sorunu**: İndirme progress event'leri gelmiyordu
+- `downloadUpdate()` ve `quitAndInstall()` fonksiyonları export edildi
+- main.ts artık **aynı autoUpdater instance**'ını kullanıyor
+- Progress bar artık **gerçekten çalışıyor**! 📊
+
+### 🔧 Teknik Detay
+main.ts'de `require('electron-updater')` ile yeni instance oluşturuluyordu,
+bu yüzden event listener'lar çalışmıyordu. Şimdi auto-updater.ts'den
+export edilen fonksiyonları kullanıyoruz.
+
+---
+
 ## v2.2.5 - Temizlik: Auto-Update Test Badge Kaldırıldı (2025-09-30)
 
 ### 🧹 Temizlik

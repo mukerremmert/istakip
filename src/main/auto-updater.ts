@@ -71,3 +71,14 @@ export function checkForUpdates() {
   })
 }
 
+// İndirme başlat
+export function downloadUpdate() {
+  log.info('📥 downloadUpdate fonksiyonu çağrıldı')
+  autoUpdater.downloadUpdate()
+}
+
+// Yükle ve yeniden başlat
+export function quitAndInstall() {
+  log.info('🔄 quitAndInstall fonksiyonu çağrıldı')
+  autoUpdater.quitAndInstall(false, true)
+}
