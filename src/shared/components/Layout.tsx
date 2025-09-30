@@ -21,6 +21,10 @@ import packageJson from '../../../package.json'
 declare global {
   interface Window {
     electronAPI: {
+      database?: any
+      vehicle?: any
+      court?: any
+      job?: any
       updater: {
         onUpdateChecking: (callback: () => void) => () => void
         onUpdateAvailable: (callback: (version: string) => void) => () => void
