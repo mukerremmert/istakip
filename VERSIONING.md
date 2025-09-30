@@ -1,5 +1,17 @@
 # İş Takip Sistemi - Versiyon Geçmişi
 
+## v2.2.5 - Temizlik: Auto-Update Test Badge Kaldırıldı (2025-09-30)
+
+### 🧹 Temizlik
+- Dashboard'daki "Auto-Update Test" badge'i kaldırıldı
+- Daha temiz Dashboard görünümü
+- Auto-update testi için çıkarılan versiyon
+
+### 🧪 Test Amacı
+Bu versiyon v2.2.4'ten güncelleme yaparken modern UI'ı test etmek için çıkarılmıştır.
+
+---
+
 ## v2.2.4 - Hotfix: Auto-Update IPC Handlers (2025-09-30)
 
 ### 🐛 Bug Fix

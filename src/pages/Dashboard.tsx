@@ -240,12 +240,7 @@ const Dashboard: React.FC = () => {
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold">📊 İş Takip Sistemi Dashboard</h1>
-              <span className="bg-green-400 text-green-900 text-xs font-semibold px-2.5 py-0.5 rounded-full animate-pulse">
-                🔄 Auto-Update Test
-              </span>
-            </div>
+            <h1 className="text-2xl font-bold mb-2">📊 İş Takip Sistemi Dashboard</h1>
             <p className="text-blue-100">
               {loading ? 'Veriler yükleniyor...' : 
                `Toplam ${totalJobs} iş kaydı, ${completedJobs} tamamlandı, ${paidAmount.toLocaleString('tr-TR')} ₺ ödendi`}
