@@ -1,5 +1,33 @@
 # İş Takip Sistemi - Versiyon Geçmişi
 
+## v2.2.2 - Modern Auto-Update UI (2025-09-30)
+
+### ✨ Yenilikler
+- **Modern Güncelleme Bildirimi**: Sağ altta modern, animasyonlu bildirim kartı
+- **Gerçek Zamanlı Progress Bar**: İndirme ilerlemesi %0-100 görsel olarak gösteriliyor
+- **Kullanıcı Dostu**: Kolay anlaşılır mesajlar ve butonlar
+- **Proje Stiline Uygun**: Tailwind CSS ve mevcut tasarım diliyle uyumlu
+
+### 🎨 Tasarım
+- Gradient renkler (mavi-mor tonları)
+- Animasyonlu ikonlar (spin, pulse)
+- Hover efektleri ve shadow'lar
+- Responsive ve modern card tasarımı
+
+### 🔄 Özellikler
+- Güncelleme kontrolü bildirimi
+- "Şimdi İndir" butonu
+- İndirme progress bar'ı (%0-100)
+- "Yeniden Başlat" butonu (indirme sonrası)
+- "Daha Sonra" seçeneği
+- Otomatik kapanma (hata/güncel değilse)
+
+### 🧪 Test
+Bu versiyon yeni güncelleme UI'ını test etmek için çıkarılmıştır.
+v2.2.1'den güncelleme yaparken modern arayüzü göreceksiniz!
+
+---
+
 ## v2.2.1 - Auto-Update Test Release (2025-09-30)
 
 ### 🔄 Auto-Update Sistemi Test

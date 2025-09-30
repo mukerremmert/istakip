@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
   HomeIcon, 
@@ -12,9 +12,29 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline'
+import UpdateNotification from './UpdateNotification'
 
 // @ts-ignore - package.json'u import ediyoruz
 import packageJson from '../../../package.json'
+
+// Electron API tiplerini tanımla
+declare global {
+  interface Window {
+    electronAPI: {
+      updater: {
+        onUpdateChecking: (callback: () => void) => () => void
+        onUpdateAvailable: (callback: (version: string) => void) => () => void
+        onUpdateNotAvailable: (callback: () => void) => () => void
+        onDownloadProgress: (callback: (progress: any) => void) => () => void
+        onUpdateDownloaded: (callback: (version: string) => void) => () => void
+        onUpdateError: (callback: (error: string) => void) => () => void
+        downloadUpdate: () => Promise<any>
+        quitAndInstall: () => Promise<any>
+        checkForUpdates: () => Promise<any>
+      }
+    }
+  }
+}
 
 interface LayoutProps {
   children: React.ReactNode
@@ -24,6 +44,71 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false) // Mobile toggle
   const [collapsed, setCollapsed] = useState(false) // Desktop collapse
   const location = useLocation()
+
+  // Auto-update state
+  const [updateStatus, setUpdateStatus] = useState<'checking' | 'available' | 'downloading' | 'downloaded' | 'not-available' | 'error' | null>(null)
+  const [updateVersion, setUpdateVersion] = useState<string>()
+  const [downloadProgress, setDownloadProgress] = useState(0)
+
+  // Auto-update event listeners
+  useEffect(() => {
+    // Electron API kontrolü
+    if (!window.electronAPI?.updater) {
+      console.log('⚠️ Electron updater API bulunamadı (muhtemelen web modunda)')
+      return
+    }
+
+    console.log('✅ Auto-update event listeners kuruluyor...')
+
+    // Event listener'ları kur
+    const unsubChecking = window.electronAPI.updater.onUpdateChecking(() => {
+      console.log('🔍 Güncelleme kontrol ediliyor...')
+      setUpdateStatus('checking')
+    })
+
+    const unsubAvailable = window.electronAPI.updater.onUpdateAvailable((version: string) => {
+      console.log('✨ Yeni güncelleme mevcut:', version)
+      setUpdateStatus('available')
+      setUpdateVersion(version)
+    })
+
+    const unsubNotAvailable = window.electronAPI.updater.onUpdateNotAvailable(() => {
+      console.log('✅ Uygulama güncel')
+      setUpdateStatus('not-available')
+      // 3 saniye sonra notification'ı gizle
+      setTimeout(() => setUpdateStatus(null), 3000)
+    })
+
+    const unsubProgress = window.electronAPI.updater.onDownloadProgress((progress: any) => {
+      console.log('📥 İndirme ilerlemesi:', Math.round(progress.percent) + '%')
+      setUpdateStatus('downloading')
+      setDownloadProgress(Math.round(progress.percent))
+    })
+
+    const unsubDownloaded = window.electronAPI.updater.onUpdateDownloaded((version: string) => {
+      console.log('✅ Güncelleme indirildi:', version)
+      setUpdateStatus('downloaded')
+      setUpdateVersion(version)
+      setDownloadProgress(100)
+    })
+
+    const unsubError = window.electronAPI.updater.onUpdateError((error: string) => {
+      console.error('❌ Güncelleme hatası:', error)
+      setUpdateStatus('error')
+      // 5 saniye sonra notification'ı gizle
+      setTimeout(() => setUpdateStatus(null), 5000)
+    })
+
+    // Cleanup
+    return () => {
+      unsubChecking()
+      unsubAvailable()
+      unsubNotAvailable()
+      unsubProgress()
+      unsubDownloaded()
+      unsubError()
+    }
+  }, [])
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: HomeIcon },
@@ -36,6 +121,31 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const isActive = (path: string) => {
     return location.pathname === path
+  }
+
+  // Auto-update handlers
+  const handleDownload = async () => {
+    console.log('📥 İndirme başlatılıyor...')
+    try {
+      await window.electronAPI.updater.downloadUpdate()
+      setUpdateStatus('downloading')
+    } catch (error) {
+      console.error('İndirme başlatma hatası:', error)
+    }
+  }
+
+  const handleInstall = async () => {
+    console.log('🔄 Yükleme ve yeniden başlatma...')
+    try {
+      await window.electronAPI.updater.quitAndInstall()
+    } catch (error) {
+      console.error('Yükleme hatası:', error)
+    }
+  }
+
+  const handleDismiss = () => {
+    console.log('👋 Güncelleme bildirimi kapatıldı')
+    setUpdateStatus(null)
   }
 
   return (
@@ -206,6 +316,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </main>
       </div>
+
+      {/* Update Notification */}
+      <UpdateNotification
+        status={updateStatus}
+        version={updateVersion}
+        progress={downloadProgress}
+        onDownload={handleDownload}
+        onInstall={handleInstall}
+        onDismiss={handleDismiss}
+      />
     </div>
   )
 }

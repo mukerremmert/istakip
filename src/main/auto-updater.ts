@@ -1,5 +1,5 @@
 import { autoUpdater } from 'electron-updater'
-import { BrowserWindow, dialog } from 'electron'
+import { BrowserWindow } from 'electron'
 import log from 'electron-log'
 
 // Log yapılandırması
@@ -20,20 +20,7 @@ export function setupAutoUpdater(mainWindow: BrowserWindow | null) {
   // 2. Güncelleme mevcut
   autoUpdater.on('update-available', (info) => {
     log.info('✨ Yeni güncelleme mevcut!', info.version)
-    
-    dialog.showMessageBox(mainWindow!, {
-      type: 'info',
-      title: 'Güncelleme Mevcut',
-      message: `Yeni versiyon mevcut: v${info.version}`,
-      detail: `Mevcut versiyon: v${autoUpdater.currentVersion}\n\nGüncellemek ister misiniz?`,
-      buttons: ['Şimdi İndir', 'Daha Sonra'],
-      defaultId: 0,
-      cancelId: 1
-    }).then(result => {
-      if (result.response === 0) {
-        autoUpdater.downloadUpdate()
-      }
-    })
+    mainWindow?.webContents.send('update-available', info.version)
   })
 
   // 3. Güncelleme yok
@@ -56,31 +43,13 @@ export function setupAutoUpdater(mainWindow: BrowserWindow | null) {
   autoUpdater.on('update-downloaded', (info) => {
     log.info('✅ Güncelleme indirildi!')
     mainWindow?.setProgressBar(-1) // Progress bar'ı kapat
-    
-    dialog.showMessageBox(mainWindow!, {
-      type: 'info',
-      title: 'Güncelleme Hazır',
-      message: 'Güncelleme indirildi ve yüklemeye hazır!',
-      detail: 'Uygulama yeniden başlatılacak. Devam etmek istiyor musunuz?',
-      buttons: ['Şimdi Yeniden Başlat', 'Daha Sonra'],
-      defaultId: 0,
-      cancelId: 1
-    }).then(result => {
-      if (result.response === 0) {
-        // Hemen yükle ve yeniden başlat
-        autoUpdater.quitAndInstall(false, true)
-      }
-    })
+    mainWindow?.webContents.send('update-downloaded', info.version)
   })
 
   // 6. Hata oluştu
   autoUpdater.on('error', (error) => {
     log.error('❌ Auto-updater hatası:', error)
-    
-    dialog.showErrorBox(
-      'Güncelleme Hatası',
-      `Güncelleme sırasında bir hata oluştu:\n\n${error.message}`
-    )
+    mainWindow?.webContents.send('update-error', error.message)
   })
 
   // Uygulama başladıktan 5 saniye sonra kontrol et

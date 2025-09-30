@@ -78,12 +78,46 @@ const databaseAPI = {
   }
 }
 
+// Auto-updater API
+const updaterAPI = {
+  // Güncelleme event'lerini dinle
+  onUpdateChecking: (callback: () => void) => {
+    ipcRenderer.on('update-checking', callback)
+    return () => ipcRenderer.removeListener('update-checking', callback)
+  },
+  onUpdateAvailable: (callback: (version: string) => void) => {
+    ipcRenderer.on('update-available', (_event, version) => callback(version))
+    return () => ipcRenderer.removeAllListeners('update-available')
+  },
+  onUpdateNotAvailable: (callback: () => void) => {
+    ipcRenderer.on('update-not-available', callback)
+    return () => ipcRenderer.removeListener('update-not-available', callback)
+  },
+  onDownloadProgress: (callback: (progress: any) => void) => {
+    ipcRenderer.on('update-download-progress', (_event, progress) => callback(progress))
+    return () => ipcRenderer.removeAllListeners('update-download-progress')
+  },
+  onUpdateDownloaded: (callback: (version: string) => void) => {
+    ipcRenderer.on('update-downloaded', (_event, version) => callback(version))
+    return () => ipcRenderer.removeAllListeners('update-downloaded')
+  },
+  onUpdateError: (callback: (error: string) => void) => {
+    ipcRenderer.on('update-error', (_event, error) => callback(error))
+    return () => ipcRenderer.removeAllListeners('update-error')
+  },
+  // Güncelleme aksiyonları
+  downloadUpdate: () => ipcRenderer.invoke('start-download-update'),
+  quitAndInstall: () => ipcRenderer.invoke('quit-and-install'),
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates')
+}
+
 // Renderer process'e güvenli API exposure
 contextBridge.exposeInMainWorld('electronAPI', {
   database: databaseAPI,
   vehicle: databaseAPI.vehicle,
   court: databaseAPI.court,
-  job: databaseAPI.job
+  job: databaseAPI.job,
+  updater: updaterAPI
 })
 
 console.log('✅ Preload script yüklendi - SQLite3 API hazır')
