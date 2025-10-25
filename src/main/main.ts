@@ -220,6 +220,36 @@ function setupIPCHandlers() {
     }
   })
 
+  ipcMain.handle('job:update', async (_, jobData) => {
+    console.log('📋 job:update handler çağrıldı')
+    try {
+      await run(
+        `UPDATE jobs SET 
+          date = ?, received_date = ?, scheduled_date = ?, court_id = ?, file_number = ?, 
+          vehicle_id = ?, total_amount = ?, base_amount = ?, vat_amount = ?, vat_rate = ?, 
+          payment_status = ?, invoice_status = ?, status = ?, status_date = ?, status_note = ?, 
+          invoice_number = ?, invoice_date = ?, payment_date = ?, completion_date = ?, 
+          notes = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?`,
+        [jobData.scheduledDate, jobData.receivedDate, jobData.scheduledDate, jobData.courtId, jobData.fileNumber, jobData.vehicleId, jobData.totalAmount, jobData.baseAmount, jobData.vatAmount, jobData.vatRate, jobData.paymentStatus, jobData.invoiceStatus, jobData.status, jobData.statusDate, jobData.statusNote, jobData.invoiceNumber, jobData.invoiceDate, jobData.paymentDate, jobData.completionDate, jobData.notes, jobData.id]
+      )
+      
+      const updatedJob = await get(`
+        SELECT j.*, c.name as court_name, v.plate as vehicle_plate
+        FROM jobs j
+        JOIN courts c ON j.court_id = c.id
+        LEFT JOIN vehicles v ON j.vehicle_id = v.id
+        WHERE j.id = ?
+      `, [jobData.id])
+      
+      console.log('✅ Job güncellendi:', updatedJob)
+      return { success: true, data: updatedJob }
+    } catch (error) {
+      console.error('❌ Job update hatası:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Bilinmeyen hata' }
+    }
+  })
+
   // Vehicle handlers
   ipcMain.handle('vehicle:getAll', async () => {
     console.log('🚗 vehicle:getAll handler çağrıldı')
@@ -278,6 +308,17 @@ function setupIPCHandlers() {
       console.error('❌ Court create hatası:', error)
       return { success: false, error: error instanceof Error ? error.message : 'Bilinmeyen hata' }
     }
+  })
+
+  // App version handler
+  ipcMain.handle('get-app-version', () => {
+    console.log('📦 Uygulama versiyonu istendi')
+    return app.getVersion()
+  })
+
+  ipcMain.handle('get-app-name', () => {
+    console.log('📦 Uygulama ismi istendi')
+    return app.getName()
   })
 
   // Auto-updater: Manuel güncelleme kontrolü

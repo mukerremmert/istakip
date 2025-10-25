@@ -15,6 +15,7 @@ interface JobListProps {
   onSearchChange: (term: string) => void
   refreshTrigger: number // Yenileme tetikleyicisi
   filteredJobs?: Job[] // Dışarıdan filtreli veri
+  onRefresh?: () => void // Parent component'i yenileme fonksiyonu
 }
 
 const JobList: React.FC<JobListProps> = ({
@@ -23,7 +24,8 @@ const JobList: React.FC<JobListProps> = ({
   searchTerm,
   onSearchChange,
   refreshTrigger,
-  filteredJobs
+  filteredJobs,
+  onRefresh
 }) => {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
@@ -231,7 +233,8 @@ const JobList: React.FC<JobListProps> = ({
       }
 
       await jobController.updateJob(updateData as any)
-      await loadJobs() // Listeyi yenile
+      await loadJobs() // Local listeyi yenile
+      onRefresh?.() // Parent component'i yenile (istatistikler için)
       
       setInvoiceDetails(null)
       setEditingField(null)
@@ -262,7 +265,8 @@ const JobList: React.FC<JobListProps> = ({
       }
 
       await jobController.updateJob(updateData as any)
-      await loadJobs() // Listeyi yenile
+      await loadJobs() // Local listeyi yenile
+      onRefresh?.() // Parent component'i yenile (istatistikler için)
       
       setPaymentDetails(null)
       setEditingField(null)
@@ -293,7 +297,8 @@ const JobList: React.FC<JobListProps> = ({
       }
 
       await jobController.updateJob(updateData as any)
-      await loadJobs() // Listeyi yenile
+      await loadJobs() // Local listeyi yenile
+      onRefresh?.() // Parent component'i yenile (istatistikler için)
       
       setCompletionDetails(null)
       setEditingField(null)
@@ -308,7 +313,8 @@ const JobList: React.FC<JobListProps> = ({
 
   const handleEditSubmit = async (jobData: any) => {
     try {
-      await loadJobs() // Listeyi yenile
+      await loadJobs() // Local listeyi yenile
+      onRefresh?.() // Parent component'i yenile (istatistikler için)
       setShowEditModal(false)
       setEditingJob(null)
     } catch (err) {
@@ -327,7 +333,8 @@ const JobList: React.FC<JobListProps> = ({
       await jobController.updateJob(updatedJob)
       setShowCompletionModal(false)
       setJobToComplete(null)
-      loadJobs() // Listeyi yenile
+      loadJobs() // Local listeyi yenile
+      onRefresh?.() // Parent component'i yenile (istatistikler için)
     } catch (error) {
       console.error('İş tamamlama hatası:', error)
     }

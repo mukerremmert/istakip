@@ -59,6 +59,7 @@ nsis:
   menuCategory: true
   runAfterFinish: true
   deleteAppDataOnUninstall: false
+  artifactName: is-takip-sistemi-setup-${version}.exe
   
 # Portable Configuration (Alternatif)
 portable:

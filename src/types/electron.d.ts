@@ -11,6 +11,11 @@ declare global {
       court: CourtAPI
       job: JobAPI
     }
+    electron: {
+      invoke: (channel: string, ...args: any[]) => Promise<any>
+      on: (channel: string, listener: (event: any, ...args: any[]) => void) => void
+      removeListener: (channel: string, listener: (...args: any[]) => void) => void
+    }
   }
 }
 

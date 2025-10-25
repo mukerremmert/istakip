@@ -7,7 +7,8 @@ import {
   CurrencyDollarIcon,
   DocumentTextIcon,
   CalendarIcon,
-  TruckIcon
+  TruckIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline'
 import { jobService } from '../modules/jobs/models/JobService'
 import { Job } from '../shared/types/Job'
@@ -17,6 +18,39 @@ const Dashboard: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [showUpcomingPopup, setShowUpcomingPopup] = useState(false)
+  const [appVersion, setAppVersion] = useState('...')
+  const [checkingUpdate, setCheckingUpdate] = useState(false)
+
+  // Versiyon bilgisini al
+  useEffect(() => {
+    const getVersion = async () => {
+      if (window.electron) {
+        try {
+          const version = await window.electron.invoke('get-app-version')
+          setAppVersion(version)
+        } catch (error) {
+          console.error('Versiyon alınamadı:', error)
+          setAppVersion('2.2.8')
+        }
+      }
+    }
+    getVersion()
+  }, [])
+
+  // Manuel güncelleme kontrolü
+  const handleCheckForUpdates = async () => {
+    if (window.electron && !checkingUpdate) {
+      setCheckingUpdate(true)
+      try {
+        await window.electron.invoke('check-for-updates')
+        // 5 saniye sonra loading'i kapat (güncelleme yoksa bildirim gelir)
+        setTimeout(() => setCheckingUpdate(false), 5000)
+      } catch (error) {
+        console.error('Güncelleme kontrolü hatası:', error)
+        setCheckingUpdate(false)
+      }
+    }
+  }
 
   // İşleri yükle
   useEffect(() => {
@@ -243,7 +277,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <h1 className="text-2xl font-bold">📊 İş Takip Sistemi Dashboard</h1>
               <span className="bg-yellow-400 text-yellow-900 text-xs font-semibold px-2 py-1 rounded-full">
-                v2.2.7 ✨
+                v{appVersion} ✨
               </span>
             </div>
             <p className="text-blue-100">
@@ -251,12 +285,23 @@ const Dashboard: React.FC = () => {
                `Toplam ${totalJobs} iş kaydı, ${completedJobs} tamamlandı, ${paidAmount.toLocaleString('tr-TR')} ₺ ödendi`}
             </p>
           </div>
-          <button
-            onClick={() => setShowUpcomingPopup(true)}
-            className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all"
-          >
-            📅 Yaklaşan İşler
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleCheckForUpdates}
+              disabled={checkingUpdate}
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Güncellemeleri kontrol et"
+            >
+              <ArrowPathIcon className={`w-5 h-5 ${checkingUpdate ? 'animate-spin' : ''}`} />
+              {checkingUpdate ? 'Kontrol Ediliyor...' : 'Güncelleme Kontrol'}
+            </button>
+            <button
+              onClick={() => setShowUpcomingPopup(true)}
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all"
+            >
+              📅 Yaklaşan İşler
+            </button>
+          </div>
         </div>
       </div>
 

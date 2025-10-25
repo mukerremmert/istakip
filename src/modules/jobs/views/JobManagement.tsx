@@ -298,6 +298,7 @@ const JobManagement: React.FC = () => {
         onSearchChange={setSearchTerm}
         refreshTrigger={refreshTrigger}
         filteredJobs={getFilteredJobs()}
+        onRefresh={() => setRefreshTrigger(prev => prev + 1)}
       />
 
       {/* İş Ekleme Modalı */}

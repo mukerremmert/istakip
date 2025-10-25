@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
+import { setupAutoUpdater, checkForUpdates, downloadUpdate, quitAndInstall } from '../src/main/auto-updater'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -31,6 +32,11 @@ app.on('window-all-closed', () => {
 
 // Ana pencere oluştur
 function createWindow() {
+  // Preload script yolu
+  const preloadPath = isDev 
+    ? join(__dirname, '../dist-electron/preload.cjs')
+    : join(__dirname, 'preload.cjs')
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -38,7 +44,8 @@ function createWindow() {
     minHeight: 600,
     webPreferences: {
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
+      preload: preloadPath
     },
     titleBarStyle: 'default',
     show: false
@@ -65,6 +72,11 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  // Auto-updater'ı sadece production'da başlat
+  if (!isDev) {
+    setupAutoUpdater(mainWindow)
+  }
 }
 
 // IPC handlers
@@ -74,6 +86,19 @@ ipcMain.handle('get-app-version', () => {
 
 ipcMain.handle('get-app-name', () => {
   return app.getName()
+})
+
+// Auto-update IPC handlers
+ipcMain.handle('check-for-updates', () => {
+  checkForUpdates()
+})
+
+ipcMain.handle('start-download-update', () => {
+  downloadUpdate()
+})
+
+ipcMain.handle('quit-and-install', () => {
+  quitAndInstall()
 })
 
 // Menü oluştur

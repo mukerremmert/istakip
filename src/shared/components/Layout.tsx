@@ -98,9 +98,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     const unsubError = window.electronAPI.updater.onUpdateError((error: string) => {
       console.error('❌ Güncelleme hatası:', error)
-      setUpdateStatus('error')
-      // 5 saniye sonra notification'ı gizle
-      setTimeout(() => setUpdateStatus(null), 5000)
+      
+      // İnternet/Network hatası kontrolü
+      const networkErrorKeywords = [
+        'net::',
+        'ENOTFOUND',
+        'ECONNREFUSED',
+        'ETIMEDOUT',
+        'ECONNRESET',
+        'network',
+        'internet',
+        'connection',
+        'offline',
+        'getaddrinfo'
+      ]
+      
+      const isNetworkError = networkErrorKeywords.some(keyword => 
+        error.toLowerCase().includes(keyword.toLowerCase())
+      )
+      
+      if (isNetworkError) {
+        // Sessiz mod: İnternet yoksa kullanıcıya gösterme
+        console.log('🔇 İnternet hatası - Sessiz mod aktif, bildirim gösterilmiyor')
+        // UI'da hata gösterme, sadece log tut
+      } else {
+        // Diğer hatalar için göster
+        console.error('⚠️ Gerçek hata - Kullanıcıya gösteriliyor')
+        setUpdateStatus('error')
+        // 5 saniye sonra notification'ı gizle
+        setTimeout(() => setUpdateStatus(null), 5000)
+      }
     })
 
     // Cleanup

@@ -121,7 +121,7 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({
 
           {status === 'error' && (
             <p className="text-sm text-red-600">
-              Güncelleme sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin.
+              Güncelleme kontrolü başarısız oldu. Lütfen daha sonra tekrar deneyin.
             </p>
           )}
         </div>
