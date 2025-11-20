@@ -2,6 +2,9 @@ appId: com.app
 productName: Connex İş Takip Sistemi
 copyright: Copyright © 2025 Connex
 
+# Artifact name (auto-update için önemli)
+artifactName: Connex İş Takip Sistemi - ${version}.exe
+
 # Auto-Update: GitHub Releases
 publish:
   provider: github
