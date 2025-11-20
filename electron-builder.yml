@@ -2,8 +2,8 @@ appId: com.app
 productName: Connex İş Takip Sistemi
 copyright: Copyright © 2025 Connex
 
-# Artifact name (auto-update için önemli)
-artifactName: Connex İş Takip Sistemi - ${version}.exe
+# Artifact name (auto-update için önemli - URL-safe)
+artifactName: Connex-Is-Takip-Sistemi-${version}.exe
 
 # Auto-Update: GitHub Releases
 publish:
@@ -62,7 +62,7 @@ nsis:
   menuCategory: true
   runAfterFinish: true
   deleteAppDataOnUninstall: false
-  artifactName: Connex İş Takip Sistemi - ${version}.exe
+  artifactName: Connex-Is-Takip-Sistemi-${version}.exe
   installerIcon: null
   uninstallerIcon: null
   # Kurulum dizinini kontrol etmek için GUID kullan
