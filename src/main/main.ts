@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import { join } from 'path'
 import path from 'path'
 import sqlite3 from 'sqlite3'
@@ -399,9 +399,11 @@ function createWindow() {
       preload: join(__dirname, 'preload.cjs'),
       nodeIntegration: false,
       contextIsolation: true,
+      devTools: isDev // Sadece development modunda DevTools kullanılabilir
     },
     icon: join(__dirname, '../../assets/icon.ico'),
     titleBarStyle: 'default',
+    autoHideMenuBar: true, // Menü bar'ı gizle (Alt tuşu ile gösterilebilir)
     show: false // İlk başta gizli, hazır olduğunda göster
   })
 
@@ -411,9 +413,11 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show()
     
-    // DevTools'u HER ZAMAN aç (production'da da)
-    mainWindow?.webContents.openDevTools()
-    console.log('🔧 DevTools açıldı - Console log\'ları görülebilir')
+    // DevTools'u sadece development modunda aç
+    if (isDev) {
+      mainWindow?.webContents.openDevTools()
+      console.log('🔧 DevTools açıldı - Console log\'ları görülebilir')
+    }
     console.log('🎯 Mod:', isDev ? 'DEVELOPMENT' : 'PRODUCTION')
   })
 
@@ -466,6 +470,11 @@ app.whenReady().then(async () => {
   
   // Database hazır olduktan sonra ana pencereyi oluştur
   createWindow()
+
+  // Menü bar'ı kaldır (production'da)
+  if (!isDev) {
+    Menu.setApplicationMenu(null)
+  }
 
   // Auto-updater'ı başlat (sadece production'da)
   if (!isDev) {
