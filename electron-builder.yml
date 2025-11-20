@@ -1,6 +1,6 @@
-appId: com.ramazancatal.is-takip-sistemi
-productName: İş Takip Sistemi
-copyright: Copyright © 2025 Ramazan Catal
+appId: com.app
+productName: Connex İş Takip Sistemi
+copyright: Copyright © 2025 Connex
 
 # Auto-Update: GitHub Releases
 publish:
@@ -55,11 +55,17 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: İş Takip Sistemi
+  shortcutName: Connex İş Takip Sistemi
   menuCategory: true
   runAfterFinish: true
   deleteAppDataOnUninstall: false
-  artifactName: is-takip-sistemi-setup-${version}.exe
+  artifactName: Connex İş Takip Sistemi - ${version}.exe
+  installerIcon: null
+  uninstallerIcon: null
+  # Kurulum dizinini kontrol etmek için GUID kullan
+  guid: "com.connex.istakip"
+  # Özel NSIS makrosu ile kurulum path'ini zorla ayarla
+  include: build/installer.nsh
   
 # Portable Configuration (Alternatif)
 portable:

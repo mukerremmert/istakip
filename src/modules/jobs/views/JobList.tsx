@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { PencilIcon, TrashIcon, DocumentTextIcon } from '@heroicons/react/24/outline'
+import { PencilIcon, TrashIcon, DocumentTextIcon, EyeIcon } from '@heroicons/react/24/outline'
 import { Job } from '../../../shared/types/Job'
 import { jobController } from '../controllers/JobController'
 import DataTable from '../../../shared/components/DataTable'
@@ -66,6 +66,10 @@ const JobList: React.FC<JobListProps> = ({
   // İş tamamlama modal'ı için state
   const [showCompletionModal, setShowCompletionModal] = useState(false)
   const [jobToComplete, setJobToComplete] = useState<Job | null>(null)
+  
+  // İş detay modal'ı için state
+  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null)
 
   // İşleri yükle
   const loadJobs = async () => {
@@ -344,6 +348,17 @@ const JobList: React.FC<JobListProps> = ({
     setShowCompletionModal(false)
     setJobToComplete(null)
   }
+  
+  // İş detay gösterme
+  const handleViewClick = (job: Job) => {
+    setSelectedJob(job)
+    setShowDetailModal(true)
+  }
+  
+  const handleDetailClose = () => {
+    setShowDetailModal(false)
+    setSelectedJob(null)
+  }
 
   // Tablo kolonları
   const columns = [
@@ -613,9 +628,16 @@ const JobList: React.FC<JobListProps> = ({
     {
       key: 'actions',
       title: 'İşlemler',
-      width: 'w-24',
+      width: 'w-32',
       render: (value: any, job: Job) => (
         <div className="flex items-center space-x-2">
+          <button
+            onClick={() => handleViewClick(job)}
+            className="text-gray-600 hover:text-gray-900"
+            title="Görüntüle"
+          >
+            <EyeIcon className="h-5 w-5" />
+          </button>
           <button
             onClick={() => handleEditClick(job)}
             className="text-blue-600 hover:text-blue-900"
@@ -909,6 +931,235 @@ const JobList: React.FC<JobListProps> = ({
         job={jobToComplete}
         onComplete={handleJobCompletion}
       />
+      
+      {/* İş Detay Modal'ı */}
+      {showDetailModal && selectedJob && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4 rounded-t-xl">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold flex items-center">
+                  <DocumentTextIcon className="h-6 w-6 mr-2" />
+                  İş Detayları
+                </h3>
+                <button
+                  onClick={handleDetailClose}
+                  className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* Genel Bilgiler */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Genel Bilgiler
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">İş No</label>
+                    <div className="text-base text-gray-900 font-mono">#{selectedJob.id}</div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Dosya No</label>
+                    <div className="text-base text-gray-900 font-semibold">{selectedJob.fileNumber}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tarihler */}
+              <div className="bg-blue-50 rounded-lg p-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Tarihler
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Geliş Tarihi</label>
+                    <div className="text-base text-gray-900">{selectedJob.receivedDate}</div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Yapılacak Tarih</label>
+                    <div className="text-base text-blue-600 font-semibold">{selectedJob.scheduledDate}</div>
+                  </div>
+                  {selectedJob.completionDate && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Tamamlanma Tarihi</label>
+                      <div className="text-base text-green-600">{selectedJob.completionDate}</div>
+                    </div>
+                  )}
+                  {selectedJob.paymentDate && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Ödeme Tarihi</label>
+                      <div className="text-base text-green-600">{selectedJob.paymentDate}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Mahkeme ve Araç */}
+              <div className="bg-purple-50 rounded-lg p-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  Mahkeme ve Araç
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Mahkeme</label>
+                    <div className="text-base text-gray-900">{selectedJob.courtName}</div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Araç Plakası</label>
+                    <div className="text-base text-gray-900 font-mono bg-yellow-100 inline-block px-3 py-1 rounded">
+                      {selectedJob.plate}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tutar Bilgileri */}
+              <div className="bg-green-50 rounded-lg p-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Tutar Bilgileri
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-600">Matrah (KDV Hariç)</span>
+                    <span className="text-base text-gray-900">{formatCurrency(selectedJob.baseAmount)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-600">KDV (%{selectedJob.vatRate})</span>
+                    <span className="text-base text-gray-900">{formatCurrency(selectedJob.vatAmount)}</span>
+                  </div>
+                  <div className="border-t border-green-200 pt-2 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-base font-semibold text-gray-900">Toplam Tutar</span>
+                      <span className="text-xl font-bold text-green-600">{formatCurrency(selectedJob.totalAmount)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Durum Bilgileri */}
+              <div className="bg-orange-50 rounded-lg p-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Durum Bilgileri
+                </h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">İş Durumu</label>
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${JOB_STATUS_COLORS[selectedJob.status as keyof typeof JOB_STATUS_COLORS]}`}>
+                      {selectedJob.status}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Ödeme Durumu</label>
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedJob.paymentStatus === 'Ödendi' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {selectedJob.paymentStatus}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Fatura Durumu</label>
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedJob.invoiceStatus === 'Kesildi' 
+                        ? 'bg-green-100 text-green-800' 
+                        : selectedJob.invoiceStatus === 'Beklemede'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {selectedJob.invoiceStatus}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Fatura Bilgileri */}
+              {(selectedJob.invoiceNumber || selectedJob.invoiceDate) && (
+                <div className="bg-indigo-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Fatura Bilgileri
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedJob.invoiceNumber && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-1">Fatura Numarası</label>
+                        <div className="text-base text-gray-900 font-mono">{selectedJob.invoiceNumber}</div>
+                      </div>
+                    )}
+                    {selectedJob.invoiceDate && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-1">Fatura Tarihi</label>
+                        <div className="text-base text-gray-900">{selectedJob.invoiceDate}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Notlar */}
+              {selectedJob.notes && (
+                <div className="bg-yellow-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                    </svg>
+                    Notlar
+                  </h4>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedJob.notes}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 rounded-b-xl border-t">
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    handleDetailClose()
+                    handleEditClick(selectedJob)
+                  }}
+                  className="inline-flex items-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                >
+                  <PencilIcon className="h-4 w-4 mr-2" />
+                  Düzenle
+                </button>
+                <button
+                  onClick={handleDetailClose}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                >
+                  Kapat
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

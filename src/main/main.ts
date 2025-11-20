@@ -310,6 +310,34 @@ function setupIPCHandlers() {
     }
   })
 
+  ipcMain.handle('court:update', async (_, courtData) => {
+    console.log('🏛️ court:update handler çağrıldı')
+    try {
+      await run(
+        'UPDATE courts SET name = ?, city = ?, district = ?, type = ?, address = ?, phone = ?, email = ?, contact = ?, notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [courtData.name, courtData.city, courtData.district, courtData.type, courtData.address, courtData.phone, courtData.email, courtData.contact, courtData.notes, courtData.id]
+      )
+      const updatedCourt = await get('SELECT * FROM courts WHERE id = ?', [courtData.id])
+      console.log('✅ Court güncellendi:', updatedCourt)
+      return { success: true, data: updatedCourt }
+    } catch (error) {
+      console.error('❌ Court update hatası:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Bilinmeyen hata' }
+    }
+  })
+
+  ipcMain.handle('court:delete', async (_, id) => {
+    console.log('🏛️ court:delete handler çağrıldı:', id)
+    try {
+      await run('DELETE FROM courts WHERE id = ?', [id])
+      console.log('✅ Court silindi:', id)
+      return { success: true }
+    } catch (error) {
+      console.error('❌ Court delete hatası:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Bilinmeyen hata' }
+    }
+  })
+
   // App version handler
   ipcMain.handle('get-app-version', () => {
     console.log('📦 Uygulama versiyonu istendi')

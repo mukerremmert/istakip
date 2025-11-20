@@ -1,7 +1,7 @@
 {
-  "name": "is-takip-sistemi",
-  "version": "2.2.15",
-  "description": "Modern İş Takip Sistemi - Electron + React + TypeScript",
+  "name": "connex-is-takip-sistemi",
+  "version": "2.2.40",
+  "description": "Connex İş Takip Sistemi - Modern İş Takip Çözümü",
   "main": "dist-electron/main.cjs",
   "scripts": {
     "dev": "vite",
@@ -24,11 +24,21 @@
     "tailwind",
     "vite"
   ],
-  "author": "Ramazan Catal",
+  "author": "Connex",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/mukerremmert/istakip.git"
+  },
+  "build": {
+    "productName": "Connex İş Takip Sistemi",
+    "appId": "com.connexistakip.app",
+    "directories": {
+      "output": "dist-installer"
+    },
+    "nsis": {
+      "installerHeaderDistDirectory": null
+    }
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.10",
@@ -55,7 +65,8 @@
     "terser": "^5.44.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
-    "vite-plugin-electron": "^0.29.0"
+    "vite-plugin-electron": "^0.29.0",
+    "xlsx": "^0.18.5"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.8",
@@ -78,7 +89,6 @@
     "react-router-dom": "^7.9.1",
     "sqlite3": "^5.1.7",
     "wait-on": "^9.0.1",
-    "xlsx": "^0.18.5",
     "zod": "^4.1.11",
     "zustand": "^5.0.8"
   }
