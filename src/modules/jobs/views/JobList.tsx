@@ -119,11 +119,21 @@ const JobList: React.FC<JobListProps> = ({
 
     try {
       await jobController.deleteJob(jobToDelete.id)
-      await loadJobs() // Listeyi yenile
+      // Silme başarılı, listeyi yenile
+      await loadJobs()
+      onRefresh?.() // Parent component'i yenile (filteredJobs & istatistikler için)
       setShowDeleteModal(false)
       setJobToDelete(null)
     } catch (err) {
+      console.error('❌ Silme hatası:', err)
       setError(err instanceof Error ? err.message : 'İş silinirken hata oluştu')
+      // Hata olsa bile listeyi yenile (belki başka bir yerden silindi)
+      try {
+        await loadJobs()
+        onRefresh?.() // Hata durumunda da parent'ı yenile
+      } catch (loadError) {
+        console.error('❌ Liste yenileme hatası:', loadError)
+      }
     }
   }
 

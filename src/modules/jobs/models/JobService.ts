@@ -3,13 +3,25 @@ import { Job, CreateJobRequest, UpdateJobRequest, calculateVAT } from '../../../
 class JobService {
   // IPC ile main process'teki SQLite3 ile iletişim
   private async callIPC(channel: string, ...args: any[]): Promise<any> {
+    console.log(`📡 callIPC çağrıldı - channel: "${channel}", args:`, args)
+    
     if (!window.electronAPI?.job) {
       console.error('❌ ElectronAPI henüz hazır değil')
       throw new Error('ElectronAPI henüz hazır değil. Lütfen sayfayı yenileyin.')
     }
     
-    const result = await (window.electronAPI.job as any)[channel](...args)
+    const method = (window.electronAPI.job as any)[channel]
+    if (!method) {
+      console.error(`❌ Method bulunamadı: job.${channel}`)
+      throw new Error(`Method bulunamadı: job.${channel}`)
+    }
+    
+    console.log(`📞 window.electronAPI.job.${channel} çağrılıyor...`)
+    const result = await method(...args)
+    console.log(`📥 IPC sonucu (${channel}):`, result)
+    
     if (!result.success) {
+      console.error(`❌ IPC hatası (${channel}):`, result.error)
       throw new Error(result.error || 'Database işlemi başarısız')
     }
     return result.data
@@ -114,10 +126,20 @@ class JobService {
   // İş sil
   async deleteJob(id: number): Promise<boolean> {
     try {
-      await this.callIPC('delete', id)
+      console.log('🗑️ JobService.deleteJob çağrıldı, ID:', id)
+      console.log('🔍 window.electronAPI.job:', window.electronAPI?.job)
+      
+      if (!window.electronAPI?.job) {
+        console.error('❌ ElectronAPI.job mevcut değil!')
+        throw new Error('ElectronAPI henüz hazır değil. Lütfen sayfayı yenileyin.')
+      }
+      
+      console.log('📞 callIPC("delete", id) çağrılıyor...')
+      const result = await this.callIPC('delete', id)
+      console.log('✅ callIPC sonucu:', result)
       return true
     } catch (error) {
-      console.error('Error deleting job:', error)
+      console.error('❌ Error deleting job:', error)
       throw error
     }
   }

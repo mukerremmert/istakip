@@ -250,6 +250,45 @@ function setupIPCHandlers() {
     }
   })
 
+  ipcMain.handle('job:delete', async (_, id: number | string) => {
+    // ID'yi number'a çevir
+    const jobId = typeof id === 'string' ? parseInt(id, 10) : id
+    console.log('📋 job:delete handler çağrıldı:', { originalId: id, convertedId: jobId, idType: typeof id })
+    
+    if (!jobId || isNaN(jobId) || jobId <= 0) {
+      console.error('❌ Geçersiz ID:', id)
+      return { success: false, error: 'Geçersiz iş ID' }
+    }
+    
+    try {
+      // Önce kaydın var olup olmadığını kontrol et (log için)
+      const existingJob = await get('SELECT id FROM jobs WHERE id = ?', [jobId])
+      console.log('🔍 Mevcut kayıt kontrolü:', existingJob ? `ID ${jobId} bulundu` : `ID ${jobId} bulunamadı`)
+      
+      // Silme işlemini gerçekleştir (kayıt yoksa da hata vermez, sadece 0 satır etkiler)
+      await run('DELETE FROM jobs WHERE id = ?', [jobId])
+      
+      // Silme işleminin başarılı olduğunu doğrula
+      const deletedJob = await get('SELECT id FROM jobs WHERE id = ?', [jobId])
+      if (deletedJob) {
+        console.error('❌ Silme işlemi başarısız - kayıt hala mevcut:', jobId)
+        return { success: false, error: 'İş silinemedi' }
+      }
+      
+      if (existingJob) {
+        console.log('✅ Job silindi:', jobId)
+      } else {
+        console.log('⚠️ Job zaten silinmişti:', jobId)
+      }
+      
+      // Kayıt zaten yoksa bile başarılı dön (idempotent operation)
+      return { success: true, data: { deleted: true } }
+    } catch (error) {
+      console.error('❌ Job delete hatası:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Bilinmeyen hata' }
+    }
+  })
+
   // Vehicle handlers
   ipcMain.handle('vehicle:getAll', async () => {
     console.log('🚗 vehicle:getAll handler çağrıldı')
